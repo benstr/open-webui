@@ -41,9 +41,108 @@
 					localStorage.theme = 'system';
 				}
 
+				const updateFavicons = (theme) => {
+					// Get the base URL
+					const baseUrl = window.location.origin;
+					
+					// Only update favicons for hackster theme
+					if (theme === 'hackster') {
+						// Update favicon links
+						document.querySelectorAll('link[rel="icon"]').forEach(link => {
+							if (link.getAttribute('type') === 'image/png') {
+								if (link.sizes && link.sizes.value === '96x96') {
+									link.href = baseUrl + '/static/favicon-96x96-hackster-blue.png';
+								} else {
+									link.href = baseUrl + '/static/favicon-hackster-blue.png';
+								}
+							} else if (link.getAttribute('type') === 'image/svg+xml') {
+								link.href = baseUrl + '/static/favicon-hackster-blue.png';
+							}
+						});
+						document.querySelector('link[rel="shortcut icon"]').href = baseUrl + '/static/favicon-hackster-blue.png';
+						document.querySelector('link[rel="apple-touch-icon"]').href = baseUrl + '/static/apple-touch-icon-hackster-blue.png';
+					} else {
+						// Restore original favicons
+						document.querySelectorAll('link[rel="icon"][type="image/png"]').forEach((link) => {
+							if (link.sizes && link.sizes.value === '96x96') {
+								link.href = baseUrl + '/static/favicon-96x96.png';
+							} else {
+								link.href = baseUrl + '/static/favicon.png';
+							}
+						});
+						document.querySelector('link[rel="icon"][type="image/svg+xml"]').href = baseUrl + '/static/favicon.svg';
+						document.querySelector('link[rel="shortcut icon"]').href = baseUrl + '/static/favicon.ico';
+						document.querySelector('link[rel="apple-touch-icon"]').href = baseUrl + '/static/apple-touch-icon.png';
+					}
+				};
+
+				const updateTheme = (theme) => {
+					updateFavicons(theme);
+					
+					// Get the base URL
+					const baseUrl = window.location.origin;
+					
+					// Also update any images with alt="logo" or alt="profile" in the document
+					const updateLogoImages = () => {
+						// Handle all logo images
+						document.querySelectorAll('img[alt="logo"]').forEach(img => {
+							if (theme === 'hackster') {
+								img.src = baseUrl + '/static/hackster-blue.png';
+							} else if (img.src.includes('hackster-blue.png')) {
+								// Check if we have a splash/logo image for this theme
+								if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+									img.src = baseUrl + '/static/splash-dark.png';
+								} else {
+									img.src = baseUrl + '/static/splash.png';
+								}
+							}
+						});
+						
+						// Handle profile images specifically
+						document.querySelectorAll('img[alt="profile"]').forEach(img => {
+							if (theme === 'hackster') {
+								img.src = baseUrl + '/static/hackster-blue.png';
+							}
+						});
+
+						// Set a short timeout to catch dynamically added images
+						setTimeout(() => {
+							document.querySelectorAll('img[alt="profile"]').forEach(img => {
+								if (theme === 'hackster') {
+									img.src = baseUrl + '/static/hackster-blue.png';
+								}
+							});
+						}, 1000);
+					};
+					
+					// Run immediately
+					updateLogoImages();
+					
+					// Also run when DOM is fully loaded
+					if (document.readyState === 'complete') {
+						updateLogoImages();
+					} else {
+						window.addEventListener('load', updateLogoImages);
+					}
+					
+					// Add a mutation observer to catch dynamically added images
+					const observer = new MutationObserver(mutations => {
+						mutations.forEach(mutation => {
+							if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+								updateLogoImages();
+							}
+						});
+					});
+					
+					// Start observing the document with the configured parameters
+					observer.observe(document.body, { childList: true, subtree: true });
+				};
+
+				// Apply initial theme
 				if (localStorage.theme === 'system') {
 					document.documentElement.classList.add(prefersDarkTheme ? 'dark' : 'light');
 					metaThemeColorTag.setAttribute('content', prefersDarkTheme ? '#171717' : '#ffffff');
+					updateTheme('system');
 				} else if (localStorage.theme === 'oled-dark') {
 					document.documentElement.style.setProperty('--color-gray-800', '#101010');
 					document.documentElement.style.setProperty('--color-gray-850', '#050505');
@@ -51,17 +150,42 @@
 					document.documentElement.style.setProperty('--color-gray-950', '#000000');
 					document.documentElement.classList.add('dark');
 					metaThemeColorTag.setAttribute('content', '#000000');
+					updateTheme('oled-dark');
 				} else if (localStorage.theme === 'light') {
 					document.documentElement.classList.add('light');
 					metaThemeColorTag.setAttribute('content', '#ffffff');
+					updateTheme('light');
 				} else if (localStorage.theme === 'her') {
 					document.documentElement.classList.add('dark');
 					document.documentElement.classList.add('her');
 					metaThemeColorTag.setAttribute('content', '#983724');
+					updateTheme('her');
+				} else if (localStorage.theme === 'midnight-blue') {
+					document.documentElement.style.setProperty('--color-gray-800', '#0f2e4e');
+					document.documentElement.style.setProperty('--color-gray-850', '#0c2544');
+					document.documentElement.style.setProperty('--color-gray-900', '#091d3a');
+					document.documentElement.style.setProperty('--color-gray-950', '#061530');
+					document.documentElement.classList.add('dark');
+					document.documentElement.classList.add('midnight-blue');
+					metaThemeColorTag.setAttribute('content', '#0f2e4e');
+					updateTheme('midnight-blue');
+				} else if (localStorage.theme === 'hackster') {
+					// Hackster theme based on light theme
+					document.documentElement.classList.add('light');
+					document.documentElement.classList.add('hackster');
+					metaThemeColorTag.setAttribute('content', '#ffffff');
+					updateTheme('hackster');
 				} else {
 					document.documentElement.classList.add('dark');
 					metaThemeColorTag.setAttribute('content', '#171717');
+					updateTheme('dark');
 				}
+
+				// Add theme change listener to window object for other scripts to use
+				window.setTheme = (newTheme) => {
+					localStorage.theme = newTheme;
+					updateTheme(newTheme);
+				};
 
 				window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
 					if (localStorage.theme === 'system') {
@@ -74,25 +198,39 @@
 							document.documentElement.classList.remove('dark');
 							metaThemeColorTag.setAttribute('content', '#ffffff');
 						}
+						updateTheme('system');
 					}
 				});
 
 				function setSplashImage() {
 					const logo = document.getElementById('logo');
+					if (!logo) return;
+					
 					const isDarkMode = document.documentElement.classList.contains('dark');
+					const isHackster = document.documentElement.classList.contains('hackster');
+					const baseUrl = window.location.origin;
+
+					if (isHackster) {
+						logo.src = baseUrl + '/static/hackster-blue.png';
+						logo.style.filter = '';
+						return;
+					}
 
 					if (isDarkMode) {
 						const darkImage = new Image();
-						darkImage.src = '/static/splash-dark.png';
+						darkImage.src = baseUrl + '/static/splash-dark.png';
 
 						darkImage.onload = () => {
-							logo.src = '/static/splash-dark.png';
+							logo.src = baseUrl + '/static/splash-dark.png';
 							logo.style.filter = ''; // Ensure no inversion is applied if splash-dark.png exists
 						};
 
 						darkImage.onerror = () => {
+							logo.src = baseUrl + '/static/favicon.png'; // Use favicon as fallback
 							logo.style.filter = 'invert(1)'; // Invert image if splash-dark.png is missing
 						};
+					} else {
+						logo.src = baseUrl + '/static/splash.png';
 					}
 				}
 
@@ -130,6 +268,7 @@
 					transform: translateX(-50%);
 				"
 				src="/static/splash.png"
+				alt="logo"
 			/>
 
 			<div
@@ -151,6 +290,7 @@
 					style="width: auto; height: 13rem"
 					src="/static/splash.png"
 					class="animate-pulse-fast"
+					alt="logo"
 				/>
 
 				<div style="position: relative; width: 24rem; margin-top: 0.5rem">
@@ -204,6 +344,14 @@
 		background: #983724;
 	}
 
+	html.midnight-blue #splash-screen {
+		background: #091d3a;
+	}
+
+	html.hackster #splash-screen {
+		background: #fff;
+	}
+
 	#logo-her {
 		display: none;
 	}
@@ -222,7 +370,6 @@
 
 	html.her #logo-her {
 		display: block;
-		filter: invert(1);
 	}
 
 	html.her #progress-background {

@@ -39,5 +39,19 @@ export default defineConfig({
 	},
 	worker: {
 		format: 'es'
+	},
+	server: {
+		proxy: {
+			'/static': 'http://localhost:8080',
+			'/ws': {
+				target: 'http://localhost:8080',
+				ws: true
+			},
+			'/ollama': 'http://localhost:8080',
+			'/openai': 'http://localhost:8080',
+			'/api': 'http://localhost:8080',
+			'/manifest.json': 'http://localhost:8080',
+			'/opensearch.xml': 'http://localhost:8080'
+		}
 	}
 });

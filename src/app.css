@@ -28,6 +28,95 @@ html {
 	word-break: break-word;
 }
 
+/* Midnight Blue Theme Specific Styles */
+html.midnight-blue {
+	--color-primary: #4a89dc;
+	--color-primary-hover: #5d9cf3;
+	--color-accent: #6ab0f3;
+}
+
+html.midnight-blue button.bg-black {
+	background-color: var(--color-primary);
+}
+
+html.midnight-blue button.bg-black:hover {
+	background-color: var(--color-primary-hover);
+}
+
+html.midnight-blue .dark\:bg-white {
+	background-color: var(--color-primary);
+}
+
+html.midnight-blue .dark\:hover\:bg-gray-100:hover {
+	background-color: var(--color-primary-hover);
+}
+
+/* Hackster Theme Specific Styles */
+/* Currently using the light theme as a base */
+html.hackster {
+	--hackster-blue: #2E9FE6;
+	--hackster-ocean: #16425B;
+	--hackster-lake: #075B8B;
+	--hackster-sky: #E1F4FF;
+	--hackster-sky2: #c9ebff;
+}
+
+/* Sidebar background */
+html.hackster [data-sidebar], 
+html.hackster #sidebar {
+	background-color: var(--hackster-sky);
+}
+
+/* Other backgrounds */
+html.hackster .bg-gray-200,
+html.hackster .bg-gray-200:hover {
+	background-color: var(--hackster-sky2);
+}
+
+.hover\:bg-gray-100 {
+    &:hover {
+        background-color: var(--hackster-sky2);
+    }
+}
+
+html.hackster .from-gray-200 {
+	--tw-gradient-from: var(--hackster-sky2);
+}
+
+/* Button colors */
+html.hackster button.bg-black,
+html.hackster .bg-black {
+	background-color: var(--hackster-ocean);
+}
+
+html.hackster button.bg-black:hover,
+html.hackster .bg-black:hover {
+	background-color: var(--hackster-lake);
+}
+
+/* Text colors */
+html.hackster .text-gray-600,
+html.hackster .dark\:text-gray-600 {
+	color: var(--hackster-lake);
+}
+
+/* Make sure dark mode specific elements are visible on light background */
+html.hackster .dark\:text-gray-300 {
+	color: var(--hackster-ocean);
+}
+
+html.hackster .dark\:text-white {
+	color: var(--hackster-ocean);
+}
+
+/* Ensure form elements and inputs have proper contrast */
+html.hackster input, 
+html.hackster select, 
+html.hackster textarea {
+	color: var(--hackster-ocean);
+	border-color: var(--hackster-lake);
+}
+
 code {
 	/* white-space-collapse: preserve !important; */
 	overflow-x: auto;

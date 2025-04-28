@@ -15,7 +15,7 @@
 	export let getModels: Function;
 
 	// General
-	let themes = ['dark', 'light', 'rose-pine dark', 'rose-pine-dawn light', 'oled-dark'];
+	let themes = ['dark', 'light', 'rose-pine dark', 'rose-pine-dawn light', 'oled-dark', 'midnight-blue', 'hackster'];
 	let selectedTheme = 'system';
 
 	let languages: Awaited<ReturnType<typeof getLanguages>> = [];
@@ -205,7 +205,11 @@
 							? '#000000'
 							: _theme === 'her'
 								? '#983724'
-								: '#ffffff'
+								: _theme === 'midnight-blue'
+									? '#0f2e4e'
+									: _theme === 'hackster'
+										? '#ffffff'
+										: '#ffffff'
 				);
 			}
 		}
@@ -220,6 +224,15 @@
 			document.documentElement.style.setProperty('--color-gray-900', '#000000');
 			document.documentElement.style.setProperty('--color-gray-950', '#000000');
 			document.documentElement.classList.add('dark');
+		} else if (_theme === 'midnight-blue') {
+			document.documentElement.style.setProperty('--color-gray-800', '#0f2e4e');
+			document.documentElement.style.setProperty('--color-gray-850', '#0c2544');
+			document.documentElement.style.setProperty('--color-gray-900', '#091d3a');
+			document.documentElement.style.setProperty('--color-gray-950', '#061530');
+			document.documentElement.classList.add('dark');
+		} else if (_theme === 'hackster') {
+			// Hackster uses light theme as base
+			document.documentElement.classList.add('light');
 		}
 
 		console.log(_theme);
@@ -228,7 +241,13 @@
 	const themeChangeHandler = (_theme: string) => {
 		theme.set(_theme);
 		localStorage.setItem('theme', _theme);
-		applyTheme(_theme);
+		
+		// Use window.setTheme if available to update favicons as well
+		if (typeof window !== 'undefined' && window.setTheme) {
+			window.setTheme(_theme);
+		} else {
+			applyTheme(_theme);
+		}
 	};
 </script>
 
@@ -250,7 +269,9 @@
 						<option value="dark">🌑 {$i18n.t('Dark')}</option>
 						<option value="oled-dark">🌃 {$i18n.t('OLED Dark')}</option>
 						<option value="light">☀️ {$i18n.t('Light')}</option>
+						<option value="hackster">💻 Hackster</option>
 						<option value="her">🌷 Her</option>
+						<option value="midnight-blue">🌃 Midnight Blue</option>
 						<!-- <option value="rose-pine dark">🪻 {$i18n.t('Rosé Pine')}</option>
 						<option value="rose-pine-dawn light">🌷 {$i18n.t('Rosé Pine Dawn')}</option> -->
 					</select>
