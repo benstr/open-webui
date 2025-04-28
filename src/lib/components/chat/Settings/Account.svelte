@@ -2,7 +2,7 @@
 	import { toast } from 'svelte-sonner';
 	import { onMount, getContext } from 'svelte';
 
-	import { user, config, settings } from '$lib/stores';
+	import { user, config, settings, theme } from '$lib/stores';
 	import { updateUserProfile, createAPIKey, getAPIKey, getSessionUser } from '$lib/apis/auths';
 
 	import UpdatePassword from './Account/UpdatePassword.svelte';
@@ -12,6 +12,7 @@
 	import Plus from '$lib/components/icons/Plus.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import SensitiveInput from '$lib/components/common/SensitiveInput.svelte';
+	import ProfileImage from '$lib/components/chat/Messages/ProfileImage.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -163,10 +164,9 @@
 								profileImageInputElement.click();
 							}}
 						>
-							<img
-								src={profileImageUrl !== '' ? profileImageUrl : generateInitialsImage(name)}
-								alt="profile"
-								class=" rounded-full size-16 object-cover"
+							<ProfileImage
+								src={profileImageUrl !== '' ? profileImageUrl : ($theme === 'hackster' ? '' : generateInitialsImage(name))}
+								className="rounded-full size-16 object-cover"
 							/>
 
 							<div

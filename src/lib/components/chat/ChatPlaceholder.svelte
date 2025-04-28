@@ -2,7 +2,7 @@
 	import { WEBUI_BASE_URL } from '$lib/constants';
 	import { marked } from 'marked';
 
-	import { config, user, models as _models, temporaryChatEnabled } from '$lib/stores';
+	import { config, user, models as _models, temporaryChatEnabled, theme } from '$lib/stores';
 	import { onMount, getContext } from 'svelte';
 
 	import { blur, fade } from 'svelte/transition';
@@ -28,6 +28,8 @@
 	}
 
 	$: models = modelIds.map((id) => $_models.find((m) => m.id === id));
+
+	$: $theme;
 
 	onMount(() => {
 		mounted = true;
@@ -55,7 +57,9 @@
 								src={model?.info?.meta?.profile_image_url ??
 									($i18n.language === 'dg-DG'
 										? `/doge.png`
-										: `${WEBUI_BASE_URL}/static/favicon.png`)}
+										: $theme === 'hackster'
+											? `${WEBUI_BASE_URL}/static/hackster-blue.png`
+											: `${WEBUI_BASE_URL}/static/favicon.png`)}
 								class=" size-[2.7rem] rounded-full border-[1px] border-gray-100 dark:border-none"
 								alt="logo"
 								draggable="false"
@@ -68,7 +72,7 @@
 
 		{#if $temporaryChatEnabled}
 			<Tooltip
-				content={$i18n.t('This chat won’t appear in history and your messages will not be saved.')}
+				content={$i18n.t('This chat will not appear in history and your messages will not be saved.')}
 				className="w-full flex justify-center mb-0.5"
 				placement="top"
 			>

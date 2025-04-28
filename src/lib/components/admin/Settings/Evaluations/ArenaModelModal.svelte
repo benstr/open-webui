@@ -11,6 +11,7 @@
 	import { toast } from 'svelte-sonner';
 	import AccessControl from '$lib/components/workspace/common/AccessControl.svelte';
 	import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
+	import ProfileImage from '$lib/components/chat/Messages/ProfileImage.svelte';
 
 	export let show = false;
 	export let edit = false;
@@ -234,10 +235,9 @@
 									imageInputElement.click();
 								}}
 							>
-								<img
+								<ProfileImage
 									src={profileImageUrl}
-									class="size-16 rounded-full object-cover shrink-0"
-									alt="Profile"
+									className="size-16 rounded-full object-cover shrink-0"
 								/>
 
 								<div

@@ -20,7 +20,8 @@
 		channels,
 		socket,
 		config,
-		isApp
+		isApp,
+		theme
 	} from '$lib/stores';
 	import { onMount, getContext, tick, onDestroy } from 'svelte';
 
@@ -425,6 +426,8 @@
 		dropZone?.removeEventListener('drop', onDrop);
 		dropZone?.removeEventListener('dragleave', onDragLeave);
 	});
+
+	$: $theme;
 </script>
 
 <ArchivedChatsModal
@@ -528,7 +531,7 @@
 					<div class="self-center mx-1.5">
 						<img
 							crossorigin="anonymous"
-							src="{WEBUI_BASE_URL}/static/favicon.png"
+							src={$theme === 'hackster' ? `${WEBUI_BASE_URL}/static/hackster-blue.png` : `${WEBUI_BASE_URL}/static/favicon.png`}
 							class=" size-5 -translate-x-1.5 rounded-full"
 							alt="logo"
 						/>

@@ -25,7 +25,20 @@ export const socket: Writable<null | Socket> = writable(null);
 export const activeUserIds: Writable<null | string[]> = writable(null);
 export const USAGE_POOL: Writable<null | string[]> = writable(null);
 
-export const theme = writable('system');
+export const theme = writable(typeof localStorage !== 'undefined' && localStorage.theme ? localStorage.theme : 'system');
+
+theme.subscribe((value) => {
+	if (typeof localStorage !== 'undefined') {
+		localStorage.theme = value;
+	}
+});
+
+if (typeof window !== 'undefined') {
+	window.setTheme = (newTheme) => {
+		localStorage.theme = newTheme;
+		theme.set(newTheme);
+	};
+}
 
 export const shortCodesToEmojis = writable(
 	Object.entries(emojiShortCodes).reduce((acc, [key, value]) => {
